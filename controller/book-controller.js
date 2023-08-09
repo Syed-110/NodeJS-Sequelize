@@ -9,7 +9,17 @@ router.get("/create", async (req, res) => {
 
 router.post("/addBook", async (req, res) => {
   const book = await bookService.addBook(req.body);
-  res.json("Book Added Successfully");
+  res.json(book);
+});
+
+router.put("/updateBook/:id", async (req, res) => {
+  const bookById = await bookService.getBookById(req.params.id);
+  if (bookById) {
+    const book = await bookService.updateBook(req.body, req.params.id);
+    res.json(book);
+  } else {
+    res.json(`No Book Found To Update For Id ${req.params.id}.`);
+  }
 });
 
 router.get("/", async (req, res) => {
@@ -17,7 +27,7 @@ router.get("/", async (req, res) => {
   if (book.length > 0) {
     res.json(book);
   } else {
-    res.json("No Books Found");
+    res.json("No Books Found.");
   }
 });
 
@@ -26,17 +36,17 @@ router.get("/:id", async (req, res) => {
   if (book) {
     res.json(book);
   } else {
-    res.json("No Book Found");
+    res.json("No Book Found.");
   }
 });
 
 router.delete("/:id", async (req, res) => {
   const book = await bookService.getBookById(req.params.id);
   if (book) {
-    bookService.deleteBookById(req.params.id);
-    res.json("Book Deleted Successfully");
+    const book_msg = await bookService.deleteBookById(req.params.id);
+    res.json(book_msg);
   } else {
-    res.json("No Book Found");
+    res.json("No Book Found To Delete.");
   }
 });
 

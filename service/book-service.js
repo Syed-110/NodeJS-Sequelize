@@ -1,53 +1,81 @@
 const { Book } = require("../model/book-model");
-// const db = require('../server');
 
 module.exports.createTable = async () => {
-  Book.sync()
-    .then(() => {
-      console.log("Book table created successfully!");
-    })
-    .catch((error) => {
-      console.error("Unable to create table : ", error);
-      throw error;
-    });
+  try {
+    await Book.sync();
+    return "Table created successfully";
+  } catch (error) {
+    console.log("Failed to create table : ", error);
+    return error;
+  }
 };
 module.exports.addBook = async (bookData) => {
-  const { title, author, release_date, subject } = bookData;
-  Book.create({
-    title: title,
-    author: author,
-    release_date: release_date,
-    subject: subject,
-  })
-    .then((res) => {
-      console.log("Book Added Successfully");
-    })
-    .catch((error) => {
-      console.error("Failed to add a new book : ", error);
+  try {
+    const { title, author, release_date, subject } = bookData;
+    const result = await Book.create({
+      title: title,
+      author: author,
+      release_date: release_date,
+      subject: subject,
     });
+    return result.dataValues;
+  } catch (error) {
+    console.log("Failed to add a new book : ", error);
+    return error;
+  }
+};
+module.exports.updateBook = async (bookData,id) => {
+  try {
+    const { title, author, release_date, subject } = bookData;
+    const result = await Book.update({
+      title: title,
+      author: author,
+      release_date: release_date,
+      subject: subject,
+    },
+    {
+      where: {
+        id: id,
+      },
+    });
+    return "Record updated successfully";
+  } catch (error) {
+    console.log("Failed to update a book : ", error);
+    return error;
+  }
 };
 module.exports.getAllBook = async () => {
-  const books = await Book.findAll();
-  return books;
+  try {
+    const books = await Book.findAll();
+    return books;
+  } catch (error) {
+    console.log("Failed to get all books : ", error);
+    return error;
+  }
 };
 module.exports.getBookById = async (id) => {
-  const books = await Book.findOne({
-    where: {
-      id: id,
-    },
-  });
-  return books;
+  try {
+    const books = await Book.findOne({
+      where: {
+        id: id,
+      },
+    });
+    return books;
+  } catch (error) {
+    console.log("Failed to get a book : ", error);
+    return error;
+  }
 };
 module.exports.deleteBookById = async (id) => {
-  const books = await Book.destroy({
-    where: {
-      id: id,
-    },
-  })
-  .then((res) => {
-    console.log("Book Deleted Successfully");
-  })
-  .catch((error) => {
-    console.error("Failed to delete a book : ", error);
-  });
+  try {
+    await Book.destroy({
+      where: {
+        id: id,
+      },
+    })
+    return "Book deleted successfully";
+  } catch (error) {
+    console.log("Failed to delete a book : ", error);
+    return error;
+  }
 };
